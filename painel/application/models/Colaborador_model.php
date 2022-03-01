@@ -70,7 +70,7 @@ if (!class_exists('Colaborador_model'))
 			{
 				return false;
 			}
-			$filtro = "email = '{$this->email}' AND senha = '{$this->senha}'";
+			$filtro = "email = '{$this->email}' AND senha = sha1(CONCAT(salt, '{$this->senha}'))";
 			return $this->Load($filtro);
 		}
 		#######################################################################################################
@@ -259,6 +259,21 @@ if (!class_exists('Colaborador_model'))
 			if(empty($idcolaborador))
 				return $retorno;
 			return site_url('colaborador/editar/'.$idcolaborador);
+		}
+		################################################################################################################
+		public function GerarSenha($senha = "12345678")
+		{
+			try
+			{
+				$salt = gerarSalt(32);
+				$this->senha = sha1($salt.$senha);
+				$this->salt = $salt;
+			}
+			catch( Exception $e )
+			{
+				throw new Exception( $e );
+				return;
+			}
 		}
 	}
 }

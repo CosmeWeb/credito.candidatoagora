@@ -27,7 +27,7 @@
 						</div>
 					</div>
                     <div class="form-group">
-                        <label for="email" class="col-md-3 control-label"><?php echo __("Email"); ?>
+                        <label for="email" class="col-md-3 control-label"><?php echo __("E-mail"); ?>
                             <span class="require">*</span></label>
                         <div class="col-md-9">
                             <div class="input-icon">
@@ -63,11 +63,6 @@
                          </div>
                      </div>
                     <?php
-                    else:
-                    ?>
-                        <input id="senha" name="senha" type="hidden" value="<?php echo $obj->FormGet('senha'); ?>">
-                        <input id="confirma" name="confirma" type="hidden" value="<?php echo $obj->FormGet('senha'); ?>">
-                    <?php
                     endif;
                     ?>
                     <div class="form-group">
@@ -80,15 +75,6 @@
 							<?php echo form_error('acesso', '<div class="alert alert-error msn-error">', '</div>'); ?>
                         </div>
                     </div>
-					<div class="form-group">
-						<label for="visualizadashboard" class="col-md-3 control-label"><?php echo __("Visualizar o dashboard?"); ?></label>
-						<div class="col-md-9">
-							<select id="visualizadashboard" name="visualizadashboard" class="form-control">
-								<?php echo $obj->GerarOpcoesVisualizadashboard($obj->FormGet('visualizadashboard')); ?>
-							</select>
-							<?php echo form_error('visualizadashboard', '<div class="alert alert-error msn-error">', '</div>'); ?>
-						</div>
-					</div>
 					<div class="form-group">
 						<label for="icone" class="col-md-3 control-label"><?php echo __("Icone"); ?></label>
 						<div class="col-md-9">

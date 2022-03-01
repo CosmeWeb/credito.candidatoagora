@@ -1062,4 +1062,48 @@ function FormatarNumero(numero = 0)
 {    
     return new Intl.NumberFormat('pt-BR').format(numero);
 }
+function geraStringAleatoria(tamanho) {
+    var stringAleatoria = '';
+    var caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (var i = 0; i < tamanho; i++) {
+        stringAleatoria += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return stringAleatoria;
+}
+function fallbackCopyTextToClipboard(obj = null, text = "")
+{
+    if(Vazio(obj))
+    {
+        console.log('sem o texto area');
+        return;
+    }
+    obj.focus();
+    obj.select();
+
+    try
+    {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Fallback: Copying text command was ' + msg);
+    }
+    catch (err)
+    {
+        console.error('Fallback: Oops, unable to copy', err);
+    }
+}
+function copyTextToClipboard(obj = null, text = "")
+{
+    if (!navigator.clipboard)
+    {
+        obj = $(obj).get(0);
+        fallbackCopyTextToClipboard(obj, text);
+        return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+    },
+    function(err) {
+        console.error('Async: Could not copy text: ', err);
+    });
+}
 //#endregion

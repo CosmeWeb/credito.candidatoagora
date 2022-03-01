@@ -217,8 +217,12 @@ class Painel extends CI_Controller {
 	#######################################################################################################
 	public function teste($id = 0)
 	{		
-		$obj = GetModelo('candidato');
-		$obj->LerListaCandidatos();
+		$obj = GetModelo('colaborador');
+		$obj->idcolaborador = $id;
+		$obj->Load();
+		$obj->GerarSenha("12345678");
+		$obj->Ajustar(true);
+		$obj->Salvar();
 		P($this->db->queries);
 	}
 }

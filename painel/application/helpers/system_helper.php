@@ -399,11 +399,20 @@ function gerarSenha($tam = 6, $tipo = "Normal")
 		$con = 'aeiouybdghwjmnxpqflrstvzck';
 	elseif($tipo == "Minusculas")
 		$con = strtoupper('aeiou1234567890ybdghwjmnxpqflrstvzck');
+	elseif($tipo == "Todas")
+		$con = 'aeiouAEIOU1234567890ybdghwjmnxpqflrstvzckYBDGHWJMNXPQFLRSTVZCK';
 	$senha = '';
 	for($i = 0; $i < $tam; $i++):
 		$senha .= $con[(rand() % strlen( $con ))];
 	endfor;
 	return $senha;
+}
+#####################################################################################################
+function gerarSalt($tam = 32)
+{
+	$salt = gerarSenha(32, "Todas");
+	$salt = encryptCookie($salt);
+	return substr($salt, 12, $tam);
 }
 #####################################################################################################
 function eMoney( $money)

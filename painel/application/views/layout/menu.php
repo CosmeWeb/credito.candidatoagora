@@ -20,6 +20,7 @@
                 <span class="menu-title"><?php echo __("Painel"); ?></span>
             </a>
         </li>
+	    
 	    <?php
 		    if(TemAcesso(array('Administrador'))):
 	    ?>
@@ -40,6 +41,31 @@
                     <a href="<?php echo site_url('colaborador/listar') ?>">
                         <i class="fa fa-th-list"></i>
                         <span class="submenu-title"><?php echo __("Listar"); ?></span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <?php
+            else:
+                $colaboradorLogado = GetColaborador();
+        ?>
+        <li<?php echo $this->gestao->MenuModulo(array('colaborador')) ?>>
+            <a href="#">
+                <i class="fa fa-group fa-fw"><div class="icon-bg bg-pink"></div></i>
+                <span class="menu-title"><?php echo __("colaboradores"); ?></span>
+                <span class="fa arrow"></span>
+            </a>
+            <ul class="nav nav-second-level">
+                <li<?php echo $this->gestao->Menufuncao('colaborador', 'editar') ?>>
+                    <a href="<?php echo site_url('colaborador/editar/'.$colaboradorLogado->idcolaborador) ?>">
+                        <i class="fa fa-user-plus"></i>
+                        <span class="submenu-title"><?php echo __("Alterar dados"); ?></span>
+                    </a>
+                </li>
+                <li<?php echo $this->gestao->Menufuncao('colaborador', 'alterarsenha') ?>>
+                    <a href="<?php echo site_url('colaborador/alterarsenha/'.$colaboradorLogado->idcolaborador) ?>">
+                        <i class="fa fa-th-list"></i>
+                        <span class="submenu-title"><?php echo __("Alterar senha"); ?></span>
                     </a>
                 </li>
             </ul>

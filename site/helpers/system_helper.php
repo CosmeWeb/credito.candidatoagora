@@ -1524,6 +1524,7 @@ function TemAcesso($tipo = null)
 	
 	return false;
 }
+
 #####################################################################################################
 function E_Cliente($idcliente = 0)
 {
@@ -1554,34 +1555,42 @@ function E_Cliente($idcliente = 0)
 #####################################################################################################
 function encryptCookie($value)
 {
-	if(!$value){return false;}
-	/*$CI = &get_instance();
-	$key = $CI->config->item('encryption_key');
-	if(function_exists("mcrypt_create_iv"))
+	if(empty($value))
 	{
-		$text = $value;
-		$iv_size = @mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-		$iv = @mcrypt_create_iv($iv_size, MCRYPT_RAND);
-		$crypttext = @mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv);
+		return false;
 	}
-	else*/
-		$crypttext = $value;
-	return trim(base64_encode($crypttext)); //encode for cookie
+	$CI =& get_instance();	
+	$CI->load->library('encryption');
+	$CI->encryption->initialize(GetDadosCryption());
+	$crypttext = $CI->encryption->encrypt($value);
+	$crypttext = base64_encode($crypttext);
+	return trim($crypttext);
 }
 #####################################################################################################
 function decryptCookie($value)
 {
-	if(!$value){return false;}
-	$crypttext = base64_decode($value); //decode cookie
-	/*$CI = &get_instance();
-	$key = $CI->config->item('encryption_key');
-	if(function_exists("mcrypt_create_iv"))
+	if(empty($value))
 	{
-		$iv_size = @mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-		$iv = @mcrypt_create_iv($iv_size, MCRYPT_RAND);
-		$decrypttext = @mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $crypttext, MCRYPT_MODE_ECB, $iv);
-	}*/
+		return false;
+	}
+	$crypttext = base64_decode($value); 
+	$CI =& get_instance();	
+	$CI->load->library('encryption');
+	$CI->encryption->initialize(GetDadosCryption());
+	$crypttext = $CI->encryption->decrypt($crypttext);
+	
 	return trim($crypttext);
+}
+#####################################################################################################
+function &GetDadosCryption()
+{
+	$out = array(
+		'cipher' => 'aes-256',
+		'mode' => 'ctr',
+		'driver' => 'mcrypt',
+		'key' => '6ym1WPyrF0k7adylp14y5Z7LnO26E2cx'
+	);
+	return $out;
 }
 #####################################################################################################
 function force_ssl()
@@ -2254,6 +2263,8 @@ function emptyData($data = "" )
 	if($data == "0000-00-00")
 		return true;
 	if($data == "0000-00-00 00:00:00")
+		return true;
+	if($data == "0000-00-00T00:00:00")
 		return true;
 	return false;
 }
