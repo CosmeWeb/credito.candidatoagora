@@ -1,0 +1,199 @@
+/*#region Geral*/
+
+html{margin: 0px;}
+body {
+    position: relative;
+    float: left;
+    display: block;
+    width:100%;
+    margin: 0px;
+    height: auto;
+	font-family: 'Source Sans Pro','Open Sans','Noto Sans KR';
+	background-color:transparent;
+}
+body .corpo{
+    position: relative;
+    float: left;
+    display: block;
+    width:19cm;
+    margin: 1cm calc((100% - 19cm) / 2);
+    height: auto;
+	font-family: 'Source Sans Pro','Open Sans','Noto Sans KR';
+	background-color:transparent;
+}
+img{
+	position: relative;
+    float: left;
+    display: block;
+    width:100%;
+    margin:35px 0px;
+	padding: 0px;
+    height: auto;
+}
+h2, h4,h3{
+	width:100%;
+    margin: 0;
+	padding: 0px;
+	font-size: 18px;
+}
+h2 b, h4 b, h3 b{
+	font-weight: bolder;clear: none;
+}
+h4{font-size: 16px;}
+h3{font-size: 14px; font-weight: normal; width:100%;}
+.painel{
+	margin: 10px 0px 15px 0px;
+	width:100%;
+}
+.painel .titulo{
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 8px 0px 16px 0px;
+}
+.painel .titulo b{color:brown;}
+
+.paineltab{
+    position: relative;
+    float: left;
+	margin: 10px 0px 15px 0px;
+    width: 100%;
+    border: none;
+    padding: 0px;
+    display: none;
+    flex-wrap: wrap;
+}
+.quebrapagina{
+	page-break-before: left;
+}
+.cabpainel{
+	margin: 10px 0px 15px 0px;
+	width:100%;
+}
+.cabpainel .titulo{
+	text-align: left;
+	font-size: 20px;
+	padding: 0px 0px 0px 0px;
+}
+.cabpainel .titulo b.h3{
+	text-align: left;
+    font-size: 15px;
+    padding: 0px 0px 0px 0px;
+}
+.cabpainel .titulo label{
+	text-align: left;
+    font-size: 14px;
+    padding: 0px 5px 0px 5px;
+    font-weight: 100;
+    font-style: normal;
+}
+.cabpainel .titulo input, .cabpainel .titulo input:focus{
+	position: relative;
+    font-size: 13px;
+    padding: 0px 3px 0px 3px;
+    border: 1px solid #cccccc;
+}
+.cabpainel .titulo button{
+    display: inline-block;
+    padding: 6px 12px;
+    float: right;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.0;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    background-color: #116cde;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #fff;
+}
+.cabecario{
+	position: relative;
+	float: left;
+	margin: 0px 0px 0px 0px;
+    width: 100%;
+    padding: 0px;
+}
+.caixa{
+    position: relative;
+    float: left;
+    padding: 0px 2px;
+    margin: 0px 5px 8px 5px;
+    width: calc((100% / 3) - 16px);
+    border: 1px solid #cccccc;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.caixa .empresa{
+    text-align: center;
+    font-size: 14px;
+    padding: 3px 0px;
+    font-weight: 600;
+}
+.caixa .cliente{
+    font-size: 14px;
+    margin: 0px 0px 12px 0px;
+}
+.caixa .cliente b{
+
+}
+.caixa .ultimoacesso, .caixa .acesso{
+    position: relative;
+    float: left;
+    padding: 0px 0px;
+    margin: 0px;
+    width: 100%;
+    font-size: 14px;
+}
+.caixa .ultimoacesso span, .caixa .acesso span{
+    position: relative;
+    float: left;
+    width: 50%;
+    display: inline-block;
+    text-align: center;
+}
+.caixa .ultimoacesso samp, .caixa .acesso samp{
+    position: relative;
+    float: left;
+    width: 50%;
+    display: inline-block;
+    text-align: justify;
+}
+.caixa .ultimoacesso span{
+    padding: 1px 0px;
+}
+.caixa .ultimoacesso samp{
+    font-weight: 600;
+    font-size: 16px;
+}
+.caixa .acesso{
+}
+.caixa .acesso span{
+}
+.caixa .acesso samp{
+    font-weight: 600;
+}
+.loading{
+    position: relative;
+    float: left;
+    padding: 0px 0px;
+    margin: 10px 0px;
+    width: 100%;
+    font-size: 26px;
+    color: #116cde;
+    text-align: center;
+    display: block;
+}
+.loading i{
+    color: #064ba1;
+    font-size: 32px;
+}
+/*#endregion*/
+

@@ -1,0 +1,2302 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Form candidatoagora API",
+        "description": "API para comunicação dos dados do servidor do sistema form do candidato agora com o site https://form3.candidatoagora.com.br",
+        "termsOfService": "https://candidatoagora.com.br/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "https://candidatoagora.com.br/support",
+            "email": "contato@candidatoagora.com.br"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "host": "form3.candidatoagora.com.br/painel/index.php",
+    "basePath": "/api",
+    "schemes": [
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "tags":[
+        {"name":"acesso","description":"Gerencia o acesso ao painel do cliente"},
+        {"name":"vaga","description":"Gerencia as operação do cadastro de vagas"},
+        {"name":"candidato","description":"Gerencia as operação do candidato"}
+    ],
+    "paths": {
+        "/loginsistema": {
+            "post": {
+                "tags":["acesso"],
+                "summary": "Login no painel do cliente",
+                "description": "Realizar o login no painel do cliente com email e senha",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "formData",
+                        "description": "Email do cliente.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "senha",
+                        "in": "formData",
+                        "description": "Senha do cliente.",
+                        "required": true,
+                        "type": "string",
+                        "format": "password"
+                    },
+                    {
+                        "name": "manterconectado",
+                        "in": "formData",
+                        "description": "Manter o cliente conectado.",
+                        "required": true,
+                        "type": "string",
+                        "enum":["Sim","Não"]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Logar o cliente no painel e retorna a url de destino do login",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Login"
+                        }
+                    },
+                    "default": {
+                        "description": "Erro ao realizar o login",
+                        "schema": {
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags":["acesso"],
+                "summary": "Logout no painel do cliente",
+                "description": "Realizar o logout do cliente no painel ",
+                "responses": {
+                    "200": {
+                        "description": "Deslogar o cliente do painel e retorna a url de destino a pagina principal",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Login"
+                        }
+                    },
+                    "default": {
+                        "description": "Erro ao realizar o logout",
+                        "schema": {
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/salvarvaga": {
+            "post": {
+                "tags":["vaga"],
+                "summary": "Salvar os dados da vaga do cliente",
+                "description": "Salvar os dados da vaga do cliente em fase direcionando para proxíma página do processo",
+                "parameters": [
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "ID da Vaga.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "declarado",
+                        "in": "formData",
+                        "description": "Cliente declarar que têm ciência de todos termos e condições",
+                        "required": true,
+                        "type": "string",
+                        "enum":["Sim","Não"]
+                    },
+                    {
+                        "name": "autorizado",
+                        "in": "formData",
+                        "description": "Cliente estar de acordo com todas as condições de uso",
+                        "required": true,
+                        "type": "string",
+                        "enum":["Sim","Não"]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Logar o cliente no painel e retorna a url de destino do login",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/RetornoVaga"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistacidades": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de cidades dos candidatos das vagas",
+                "description": "Retorna a Lista de cidades dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idestado",
+                        "in": "formData",
+                        "description": "IDs dos estados.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de cidades.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de cidade.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de cidades dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadecidades"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistaestados": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de estados dos candidatos das vagas",
+                "description": "Retorna a Lista de estados dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de estados.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de estados.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de estados dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadeestados"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistapaises": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de paises dos candidatos das vagas",
+                "description": "Retorna a Lista de paises dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de paises.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de países.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de paises dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadepaises"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistacompetencias": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de competências dos candidatos das vagas",
+                "description": "Retorna a Lista de competências dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de competências.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de competências.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de competências dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadecompetencias"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistaniveis": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de níveis dos candidatos das vagas",
+                "description": "Retorna a Lista de níveis dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de níveis.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de níveis.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de níveis dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadeniveis"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistasetores": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de setores dos candidatos das vagas",
+                "description": "Retorna a Lista de setores dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de níveis.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de níveis.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de setores dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadesetores"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistaareas": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de áreas dos candidatos das vagas",
+                "description": "Retorna a Lista de áreas dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de áreas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de áreas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de áreas dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadeareas"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistasubareas": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de subáreas dos candidatos das vagas",
+                "description": "Retorna a Lista de subáreas dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idarea",
+                        "in": "formData",
+                        "description": "IDs das áreas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de subáreas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de áreas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de subáreas dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadesubareas"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistaempresas": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de empresas dos candidatos das vagas",
+                "description": "Retorna a Lista de empresas dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idarea",
+                        "in": "formData",
+                        "description": "IDs das empresas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de empresas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de empresas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de empresas dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadeempresas"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistabots": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de tipo de audio do bot dos candidatos das vagas",
+                "description": "Retorna a Lista de tipo de audio do bot dos candidatos das vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de empresas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de empresas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de empresas dos candidatos das vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadetiopobots"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistavagas": {
+            "post": {
+                "tags":["vaga"],
+                "summary": "Ler lista de vagas do cliente",
+                "description": "Retorna a Lista de vagas do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "buscar",
+                        "in": "formData",
+                        "description": "Busca de texto no dados da vaga.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "classificacao",
+                        "in": "formData",
+                        "description": "Classificação da ordem de apresentação da vagas.",
+                        "required": false,
+                        "type": "string",
+                        "enum":[
+                            "por tituto em ordem crescente",
+                            "por tituto em ordem decrescente",
+                            "por data de abertura em ordem crescente",
+                            "por data de abertura em ordem decrescente",
+                            "por status em ordem crescente",
+                            "por status em ordem decrescente",
+                            "por selecionados em ordem crescente",
+                            "por selecionados em ordem decrescente",
+                            "por contratados em ordem crescente",
+                            "por contratados em ordem decrescente",
+                            "por recomendados em ordem crescente",
+                            "por recomendados em ordem decrescente"
+                        ]
+                    },
+                    {
+                        "name": "ativos",
+                        "in": "formData",
+                        "description": "Moastra as vagas ativas ('Cadastro incompleto','Aguardando analise','Em analise') OU inativas ('Concluido','Cancelado','Cancelado pelo cliente','Fechado').",
+                        "required": false,
+                        "type": "string",
+                        "enum":[
+                            "Ativos",
+                            "Inativos"
+                        ]
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de empresas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de vagas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de vagas do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadevagas"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/lerlistacandidatos": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de candidatos do cliente",
+                "description": "Retorna a Lista de candidatos do cliente",
+                "parameters": [
+                    {
+                        "name": "idcliente",
+                        "in": "formData",
+                        "description": "ID do cliente.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "buscar",
+                        "in": "formData",
+                        "description": "Busca de texto no nome do candidato.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "classificacao",
+                        "in": "formData",
+                        "description": "Classificação da ordem de apresentação de candidato.",
+                        "required": false,
+                        "type": "string",
+                        "enum":[
+                            "Por nome A-Z", 
+                            "Por nome Z-A", 
+                            "Por favoritos"
+                        ]
+                    },
+                    {
+                        "name": "idcompetencia",
+                        "in": "formData",
+                        "description": "IDs das competências.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "IDs das Vagas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "tipobot",
+                        "in": "formData",
+                        "description": "Tipo dos audio da Carla responde (Bot).",
+                        "required": false,
+                        "type": "string",
+                        "enum":[
+                            "Experiência relevante de trabalho",
+                            "Motivação profissional" 
+                        ]
+                    },
+                    {
+                        "name": "idpais",
+                        "in": "formData",
+                        "description": "IDs dos países.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idestado",
+                        "in": "formData",
+                        "description": "IDs dos estados.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idcidade",
+                        "in": "formData",
+                        "description": "IDs das cidades.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idarea",
+                        "in": "formData",
+                        "description": "IDs das áreas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idsubarea",
+                        "in": "formData",
+                        "description": "IDs das subáreas.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idnivel",
+                        "in": "formData",
+                        "description": "IDs das níveis.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idsetor",
+                        "in": "formData",
+                        "description": "IDs das setores.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idempresacargo",
+                        "in": "formData",
+                        "description": "IDs das empresas dos cargos.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "format": "int64"
+                    },
+                    {
+                        "name": "setorcargo",
+                        "in": "formData",
+                        "description": "Tipo de filtro das setores dos cargos.",
+                        "required": false,
+                        "type": "string",
+                        "default": "Todos",
+                        "enum":[
+                            "Todos",
+                            "Atual",
+                            "Anterior"
+                        ]
+                    },
+                    {
+                        "name": "empresacargo",
+                        "in": "formData",
+                        "description": "Tipo de filtro das empresas dos cargos.",
+                        "required": false,
+                        "type": "string",
+                        "default": "Todos",
+                        "enum":[
+                            "Todos",
+                            "Atual",
+                            "Anterior"
+                        ]
+                    },
+                    {
+                        "name": "posicao",
+                        "in": "formData",
+                        "description": "Indice do registro na busca de empresas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "limite",
+                        "in": "formData",
+                        "description": "numero de registros que deve ser trazidos pela busca. caso o valor for 0 (zero) retorna o valor padrão com 10 registros, caso o valor for negativo (-1) retorna todos os registros",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "total",
+                        "in": "formData",
+                        "description": "Total de registros da busca de vagas.",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de candidatos do cliente",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Listadecandidatos"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do cliente não foi enviado.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/leropcaoclassificacaocandidatos": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Ler lista de opções da classificação dos candidatos",
+                "description": "Retorna a Lista de opções da ordem de classificação dos candidatos",
+                "parameters": [
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de opções da ordem de classificação dos candidatos",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Retornodeopcoes"
+                        }
+                    }
+                }
+            }
+        },
+        "/leropcaoclassificacaovagas": {
+            "post": {
+                "tags":["vaga"],
+                "summary": "Ler lista de opções da classificação das vagas",
+                "description": "Retorna a Lista de opções da ordem de classificação das vagas",
+                "parameters": [
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de opções da ordem de classificação das vagas",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Retornodeopcoes"
+                        }
+                    }
+                }
+            }
+        },
+        "/leropcaoativovagas": {
+            "post": {
+                "tags":["vaga"],
+                "summary": "Ler lista de opções de status das vagas",
+                "description": "Retorna a lista de opções de status das vagas",
+                "parameters": [
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a lista de opções de status das vagas",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/Retornodeopcoes"
+                        }
+                    }
+                }
+            }
+        },
+        "/marcarcandidato": {
+            "post": {
+                "tags":["candidato"],
+                "summary": "Marcar um candidato como favorito em um vaga",
+                "description": "Cliente marca e desmarca um candidato como favorito em um vaga",
+                "parameters": [
+                    {
+                        "name": "idcandidato",
+                        "in": "formData",
+                        "description": "ID do candidato.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "idvaga",
+                        "in": "formData",
+                        "description": "ID da idvaga.",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "desmarcar",
+                        "in": "formData",
+                        "description": "0 -> para marcar o candidato e 1 -> para desmarcar o candidato",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retorna a mensagem se o candidato foi marcado e desmarcado com sucesso",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/RetornoInform"
+                        }
+                    },
+                    "400": {
+                        "description": "ID do candidato ou da vaga não foram enviados.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/ErroModel"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ErroModel": {
+            "type": "object",
+            "required": [
+                "sucesso",
+                "erro"
+            ],
+            "properties": {
+                "sucesso": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "erro": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 100,
+                    "maximum": 505
+                }
+            }
+        },
+        "RetornoPadrao": {
+            "type": "object",
+            "required": [
+                "sucesso",
+                "mensagem"
+            ],
+            "properties": {
+                "sucesso": {
+                    "type": "boolean"
+                },
+                "mensagem": {
+                    "type": "string"
+                }
+            }
+        },
+        "Login": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/RetornoPadrao"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "link"
+                    ],
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "RetornoVaga": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Login"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "titulo"
+                    ],
+                    "properties": {
+                        "titulo": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "RetornoInform": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/RetornoPadrao"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "titulo"
+                    ],
+                    "properties": {
+                        "titulo": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "dadosinfo": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/RetornoPadrao"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "titulo": {
+                            "type": "string"
+                        },
+                        "idcliente": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "idvaga": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "posicao": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "limite": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": -1
+                        },
+                        "total": {
+                            "type": "integer",
+                            "description": "Retorna o total de registros da busca",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "finalizado": {
+                            "type": "boolean",
+                            "description": "Retorna true quando traz os ultimos registros da busca",
+                            "default": false
+                        }
+                    }
+                }
+            ]
+        },
+        "cidade": {
+            "description": "Dados de cidade",
+            "type": "object",
+            "properties": {
+                "idcidade": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "cidade": {
+                    "type": "string",
+                    "description": "nome da cidade"
+                },
+                "idestado": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "estado": {
+                    "type": "string",
+                    "description": "nome do estado"
+                },
+                "uf": {
+                    "type": "string",
+                    "description": "sigla do estado"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta cidade"
+                }
+            }
+        },
+        "estado": {
+            "description": "Dados de estado",
+            "type": "object",
+            "properties": {
+                "idestado": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "estado": {
+                    "type": "string",
+                    "description": "nome do estado"
+                },
+                "uf": {
+                    "type": "string",
+                    "description": "sigla do estado"
+                },
+                "idpais": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "pais": {
+                    "type": "string",
+                    "description": "nome do país"
+                },
+                "sigla": {
+                    "type": "string",
+                    "description": "Sigla do nome do país"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta estado"
+                }
+            }
+        },
+        "pais": {
+            "description": "Dados de pais",
+            "type": "object",
+            "properties": {
+                "idpais": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "pais": {
+                    "type": "string",
+                    "description": "nome do país"
+                },
+                "sigla": {
+                    "type": "string",
+                    "description": "Sigla do nome do país"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta país"
+                }
+            }
+        },
+        "competencia": {
+            "description": "Dados da competência",
+            "type": "object",
+            "properties": {
+                "idcompetencia": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "competencia": {
+                    "type": "string",
+                    "description": "nome da competência"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta competência"
+                }
+            }
+        },
+        "nivel": {
+            "description": "Dados da nível",
+            "type": "object",
+            "properties": {
+                "idnivel": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "nivel": {
+                    "type": "string",
+                    "description": "nome do nível"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta nível"
+                }
+            }
+        },
+        "setor": {
+            "description": "Dados da setor",
+            "type": "object",
+            "properties": {
+                "idsetor": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "setor": {
+                    "type": "string",
+                    "description": "nome do setor"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta setor"
+                }
+            }
+        },
+        "area": {
+            "description": "Dados da área",
+            "type": "object",
+            "properties": {
+                "idarea": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "area": {
+                    "type": "string",
+                    "description": "Titúlo da área"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta área"
+                }
+            }
+        },
+        "subarea": {
+            "description": "Dados da subárea",
+            "type": "object",
+            "properties": {
+                "idsubarea": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "idarea": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "subarea": {
+                    "type": "string",
+                    "description": "Titúlo da subárea"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta subárea"
+                }
+            }
+        },
+        "empresa": {
+            "description": "Dados da empresa",
+            "type": "object",
+            "properties": {
+                "idempresacargo": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "empresa": {
+                    "type": "string",
+                    "description": "Nome da empresa"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que trabalharam nesta empresa"
+                }
+            }
+        },
+        "tipobot": {
+            "description": "Dados da tipo do audio do bot",
+            "type": "object",
+            "properties": {
+                "tipobot": {
+                    "type": "string",
+                    "description": "tipo do audio do bot"
+                },
+                "total": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Total de candidatos que possuem este tipo do bot"
+                }
+            }
+        },
+        "vaga": {
+            "description": "Dados da vaga",
+            "type": "object",
+            "properties": {
+                "idvaga": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "titulodavaga": {
+                    "type": "string",
+                    "description": "Titulo da vaga"
+                },
+                "empresacontratante": {
+                    "type": "string",
+                    "description": "Nome de empresa do contratante da vaga"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status da vaga",
+                    "enum": [
+                        "Cadastro incompleto",
+                        "Aguardando analise",
+                        "Em analise",
+                        "Concluido",
+                        "Cancelado",
+                        "Cancelado pelo cliente",
+                        "Fechado"
+                    ]
+                },
+                "abertura": {
+                    "type": "string",
+                    "description": "Data de abertura da vaga d/m/Y H:i:s",
+                    "format": "date-time"
+                },
+                "codigovaga": {
+                    "type": "string",
+                    "description": "Codigo da vaga formato ANO|IDVAGA|T"
+                },
+                "selecionados": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "contratados": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "recomendados": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "cidade": {
+                    "type": "string",
+                    "description": "Nome da cidade da vaga"
+                },
+                "estado": {
+                    "type": "string",
+                    "description": "Nome do estado da vaga"
+                },
+                "uf": {
+                    "type": "string",
+                    "description": "UF do estado da vaga"
+                }
+            }
+        },
+        "candidatovaga": {
+            "description": "Dados da vaga do candidato",
+            "type": "object",
+            "properties": {
+                "idvaga": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "titulodavaga": {
+                    "type": "string",
+                    "description": "Titulo da vaga"
+                },
+                "empresacontratante": {
+                    "type": "string",
+                    "description": "Nome de empresa do contratante da vaga"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status da vaga",
+                    "enum": [
+                        "Aguardando analise",
+                        "Em analise",
+                        "Concluido",
+                        "Cancelado",
+                        "Cancelado pelo cliente",
+                        "Fechado"
+                    ]
+                },
+                "cadastradoem": {
+                    "type": "string",
+                    "description": "Data de cadastrado da vaga d/m/Y H:i:s",
+                    "format": "date-time"
+                },
+                "codigovaga": {
+                    "type": "string",
+                    "description": "Codigo da vaga formato ANO|IDVAGA|T"
+                }
+            }
+        },
+        "candidatocargo": {
+            "description": "Dados do cargo do candidato",
+            "type": "object",
+            "properties": {
+                "idcandidatocargo": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "idcargo": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "cargo": {
+                    "type": "string",
+                    "description": "Nome do cargo"
+                },
+                "empresa": {
+                    "type": "string",
+                    "description": "Nome de empresa do candidato"
+                },
+                "inicio": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Ano que o candidato iniciou na empresa"
+                },
+                "termino": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0,
+                    "description": "Ano que o candidato saiu da empresa"
+                },
+                "atual": {
+                    "type": "string",
+                    "description": "Sinalizar se o cargo é o cargoaltual",
+                    "enum": [
+                        "Sim",
+                        "Não"
+                    ]
+                },
+                "historico": {
+                    "type": "string",
+                    "description": "histórico do cargo",
+                    "enum": [
+                        "Cargo 1",
+                        "Cargo 2",
+                        "Cargo 3",
+                        "Cargo 4",
+                        "Cargo 5",
+                        "Cargo 6",
+                        "Cargo 7",
+                        "Cargo 8",
+                        "Cargo 9",
+                        "Cargo 10"
+                    ]
+                }
+            }
+        },
+        "candidatocompetencia": {
+            "description": "Dados do competência do candidato",
+            "type": "object",
+            "properties": {
+                "idcompetencia": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "competencia": {
+                    "type": "string",
+                    "description": "Nome da competência do candidato"
+                }
+            }
+        },
+        "candidatobot": {
+            "description": "Dados do audio bot do candidato",
+            "type": "object",
+            "properties": {
+                "idcompetencia": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "tipo": {
+                    "type": "string",
+                    "description": "Tipo do audio bot",
+                    "enum": [
+                        "Experiência relevante de trabalho",
+                        "Motivação profissional" 
+                    ]
+                },
+                "audio": {
+                    "type": "string",
+                    "description": "nome do arquivo do audio do bot"
+                },
+                "cadastradoem": {
+                    "type": "string",
+                    "description": "Data da cadastrado do arquivo do audio do bot d/m/Y H:i:s",
+                    "format": "date-time"
+                },
+                "link": {
+                    "type": "string",
+                    "description": "link do arquivo do audio do bot"
+                }
+            }
+        },
+        "candidato": {
+            "description": "Dados da candidato",
+            "type": "object",
+            "properties": {
+                "idcandidato": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "idcidade": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "idestado": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "idpais": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0
+                },
+                "nome": {
+                    "type": "string",
+                    "description": "nome do candidato"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "e-mail do candidato"
+                },
+                "telefone": {
+                    "type": "string",
+                    "description": "telefone do candidato"
+                },
+                "linkedin": {
+                    "type": "string",
+                    "description": "linkedin do candidato"
+                },
+                "twitter": {
+                    "type": "string",
+                    "description": "twitter do candidato"
+                },
+                "favorito": {
+                    "type": "string",
+                    "description": "Status da vaga",
+                    "enum": [
+                        "Sim",
+                        "Não"
+                    ]
+                },
+                "datacoleta": {
+                    "type": "string",
+                    "description": "Data da coleta do candidato d/m/Y",
+                    "format": "date"
+                },
+                "dataaplicacao": {
+                    "type": "string",
+                    "description": "Data da aplicação do candidato d/m/Y",
+                    "format": "date"
+                },
+                "vagas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/candidatovaga"
+                    }
+                },
+                "cargos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/candidatocargo"
+                    }
+                },
+                "competencias": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/candidatocompetencia"
+                    }
+                },
+                "bots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/candidatobot"
+                    }
+                }
+            }
+        },
+        "opcoes": {
+            "description": "Dados de opções",
+            "type": "object",
+            "properties": {
+                "texto": {
+                    "type": "string",
+                    "description": "texto da opção"
+                },
+                "valor": {
+                    "type": "string",
+                    "description": "valor da opção"
+                }
+            }
+        },
+        "Listadecidades": {
+            "description": "Lista de cidades do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/cidade"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadeestados": {
+            "description": "Lista de estados do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/estado"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadepaises": {
+            "description": "Lista de paises do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/pais"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadecompetencias": {
+            "description": "Lista de competência do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/competencia"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadeniveis": {
+            "description": "Lista de nível do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/nivel"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadesetores": {
+            "description": "Lista de setor do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/setor"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadeareas": {
+            "description": "Lista de área do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/area"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadesubareas": {
+            "description": "Lista de subárea do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/subarea"
+                            }
+                        },
+                        "idarea": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadeempresas": {
+            "description": "Lista de empresa do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/empresa"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadetiopobots": {
+            "description": "Lista de empresa do candidatos da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/dadosinfo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/tipobot"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadevagas": {
+            "description": "Lista de vaga da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/RetornoPadrao"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "titulo": {
+                            "type": "string"
+                        },
+                        "idcliente": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "posicao": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "limite": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": -1
+                        },
+                        "total": {
+                            "type": "integer",
+                            "description": "Retorna o total de registros da busca",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "finalizado": {
+                            "type": "boolean",
+                            "description": "Retorna true quando traz os ultimos registros da busca",
+                            "default": false
+                        },
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/vaga"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Listadecandidatos": {
+            "description": "Lista de candidato da cliente",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/RetornoPadrao"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "titulo": {
+                            "type": "string"
+                        },
+                        "idcliente": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "posicao": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "limite": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": -1
+                        },
+                        "total": {
+                            "type": "integer",
+                            "description": "Retorna o total de registros da busca",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "finalizado": {
+                            "type": "boolean",
+                            "description": "Retorna true quando traz os ultimos registros da busca",
+                            "default": false
+                        },
+                        "lista": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/candidato"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Retornodeopcoes": {
+            "description": "Modelo de Lista de opções",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/RetornoPadrao"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "titulo": {
+                            "type": "string"
+                        },
+                        "opcoes": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/opcoes"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
