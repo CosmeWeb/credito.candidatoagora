@@ -4,7 +4,6 @@
 		<div class="panel-body pan">
 			<form id="frmcliente" action="<?php echo site_url('cliente/editar/'.$obj->idcliente); ?>" method="POST" class="form-horizontal">
 				<div class="form-body pal">
-
 					<input id="idcliente" name="idcliente" type="hidden" placeholder="" value="<?php echo $obj->FormGet('idcliente'); ?>">
 					<div class="form-group">
 						<label for="nome" class="col-md-3 control-label"><?php echo __("Nome"); ?>
@@ -21,10 +20,29 @@
 						<label for="nome" class="col-md-3 control-label"><?php echo __("Empresa"); ?></label>
 						<div class="col-md-9">
 							<div class="input-icon">
-							<i class="fa fa-user"></i>
+							<i class="fa fa-building"></i>
 							<input id="empresa" name="empresa" type="text" placeholder="" value="<?php echo $obj->FormGet('empresa'); ?>" class="form-control">
 							<?php echo form_error('empresa', '<div class="alert alert-error msn-error">', '</div>'); ?>
 							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="saldoconta" class="col-md-3 control-label"><?php echo __("Saldo em créditos"); ?></label>
+						<div class="col-md-2">
+							<div class="input-icon">
+							<i class="el el-cog-alt"></i>
+							<input id="saldoconta" name="saldoconta" type="number" value="<?php echo $obj->FormGet('saldoconta'); ?>" class="form-control">
+							<?php echo form_error('saldoconta', '<div class="alert alert-error msn-error">', '</div>'); ?>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="idgestor" class="col-md-3 control-label"><?php echo __("Gestor"); ?></label>
+						<div class="col-md-2">
+							<select id="idgestor" name="idgestor" class="form-control">
+								<?php echo $obj->GerarOpcoesGestores($obj->FormGet('acesso')); ?>
+							</select>
+							<?php echo form_error('idgestor', '<div class="alert alert-error msn-error">', '</div>'); ?>
 						</div>
 					</div>
 					<div class="form-group">
@@ -63,11 +81,6 @@
 							</div>
 						</div>
 					</div>
-					<?php
-					else:
-					?>
-					<input id="senha" name="senha" type="hidden" placeholder="" value="<?php echo $obj->FormGet('senha'); ?>">
-					<input id="confirma" name="confirma" type="hidden" placeholder="" value="<?php echo $obj->FormGet('senha'); ?>">
 					<?php
 					endif;
 					?>

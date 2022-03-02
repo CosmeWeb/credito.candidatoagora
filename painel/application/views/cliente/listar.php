@@ -130,13 +130,14 @@
 								<thead>
                                     <tr>
                                         <th style="width: 7%;"><?php echo __("ID"); ?></th>
-                                        <th style="width: 22%;"><?php echo __("Nome"); ?></th>
-                                        <th style="width: 18%;"><?php echo __("E-mail"); ?></th>
-                                        <th style="width: 15%;"><?php echo __("Empresa"); ?></th>
-                                        <th style="width: 10%;"><?php echo __("Cliente"); ?></th>
-                                        <th style="width: 10%;"><?php echo __("Status"); ?></th>
+                                        <th style="width: 18%;"><?php echo __("Nome"); ?></th>
+                                        <th style="width: 15%;"><?php echo __("E-mail"); ?></th>
+                                        <th style="width: 14%;"><?php echo __("Empresa"); ?></th>
+                                        <th style="width: 8%;"><?php echo __("Créditos"); ?></th>
+                                        <th style="width: 11%;"><?php echo __("Gestores"); ?></th>
+                                        <th style="width: 8%;"><?php echo __("Acesso"); ?></th>
                                         <th style="width: 10%;"><?php echo __("Cadastrado em"); ?></th>
-                                        <th style="width: 8%;"><?php echo __("Ação") ?></th>
+                                        <th style="width: 9%;"><?php echo __("Ação") ?></th>
                                     </tr>
 								<tbody>
 								</tbody>
@@ -149,6 +150,65 @@
 		</div>
 	</div>
 </div>
+<!--BEGIN MODAL ALTERAR SENHA-->
+<div id="modal-alterar-senha" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" aria-hidden="true" class="close"><i class="fa fa-close"></i></button>
+                <h4 class="modal-title"><?php echo __("Gerar nova um nova senha para o cliente") ?></h4>
+            </div>
+            <div class="modal-body">
+                <form id="frmsenha">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input id="idcliente" name="idcliente" type="hidden" value="">
+                            <div class="form-group">
+                                <label for="idcliente" class="control-label"><?php echo __("Cliente") ?></label>
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                    <input id="nome" name="nome" type="text" class="form-control" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="senha" class="control-label"><?php echo __("Nova Senha") ?></label>
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-key"></i>
+                                    </span>
+                                    <input id="senha" name="senha" type="text" class="form-control" value="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">
+                    <i class="fa fa-remove"></i>
+                    <?php echo __("Fechar") ?>
+                </button>
+                <button id="btnGerarSenha" type="button" class="btn btn-orange" onclick="GerarSenha(this)">
+                    <i class="ion ion-loop"></i>
+                    <?php echo __("Gerar nova senha") ?>
+                </button>
+                <button id="btnCopiarSenha" type="button" class="btn btn-primary" onclick="CopiarSenha()">
+                    <i class="fa fa-copy"></i>
+                    <?php echo __("Copiar") ?>
+                </button>
+                <button id="btnGerarNovaSenha" type="button" class="btn btn-green" onclick="GerarNovaSenha()">
+                    <i class="fa fa-save"></i>
+                    <?php echo __("Salvar") ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--END MODAL ALTERAR SENHA-->
 <script>
     var pais = '<?php echo $this->gestao->GetPaisPadrao(); ?>';
     function confirmar(obj)
@@ -324,6 +384,52 @@
             }
         });
     }
+    function GerarSenha(obj = null)
+    {
+        let senha = geraStringAleatoria(10);
+        let i = $(obj).find("i");
+        i.removeClass("ion ion-loop").addClass("ion ion-looping");
+        senha = geraStringAleatoria(10);
+        $("#frmsenha #senha").val(senha);
+        var myVar = setTimeout(function(){
+            i.removeClass("ion ion-looping").addClass("ion ion-loop");
+            clearTimeout(myVar);
+        } , 2000);
+       
+    }
+    function CopiarSenha()
+    {
+        try
+        {
+            let caixaTexto = $("#frmsenha #senha");
+            let texto = caixaTexto.val();
+            copyTextToClipboard(caixaTexto, texto);
+        }
+        catch (err)
+        {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
+    }
+    function AbrirGerarNovaSenha(obj = null)
+    {
+        let id = $(obj).data("id");
+        let nome = $(obj).data("nome");
+        let senha = geraStringAleatoria(10);
+        $("#modal-alterar-senha").modal();
+        $("#frmsenha #idcolaborador").val(id);
+        $("#frmsenha #nome").val(nome);
+        $("#frmsenha #senha").val(senha);
+    }
+    function GerarNovaSenha()
+    {
+        let msn = "<?php echo __("Tem certeza que deseja alterar senha do cliente?<br /><b>Atenção: Você deve salvar a nova senha para enviá-la ao cliente.</b>"); ?>";
+        confirm(msn, "<?php echo __("Confirme"); ?>", function(confirmed) {
+            if (confirmed)
+            {
+                SalvarNovaSenha();
+            }
+        });
+    }
     $(document).ready(function() {
         var el_datatable = $('#cliente_tabela').DataTable({
             "language":{ "url": CDN_Url('datatables') },
@@ -343,8 +449,9 @@
 				{'data': 'nome'},
                 {'data': 'email'},
                 {'data': 'empresa'},
+                {'data': 'saldoconta'},
+                {'data': 'gestor'},
 				{'data': 'acesso'},
-				{'data': 'status'},
 				{'data': 'cadastradoem'},
                 {"data": "idcliente",
                     "render": function ( data, type, row, meta ) {
@@ -352,6 +459,21 @@
                         var link = '<a href="'+url+'" class="btn-tab-editar" title="Editar cliente"><i class="fa fa-edit"></i></a>';
                         url = GetDominio('index.php/cliente/excluir/'+data);
                         link += '<a href="javascript:;" class="btn-tab-excluir" title="Excluir cliente" onclick="confirmar(this)" data-url="'+url+'"><i class="ion ion-android-trash"></i></a>';
+                        if(row['status'] == 'Ativo')
+                        {
+                            link += '<a href="#" class="btn-tab-excluir" title="Cliente Ativado" ><i class="fa fa-check-circle-o" style="color:green"></i></a>';
+                        }
+                        else
+                        {
+                            link += '<a href="#" class="btn-tab-excluir" title="Cliente Inativado" ><i class="fa fa-times-circle-o"style="color:red"></i></a>';
+                        }
+                        <?php
+                            if(TemAcesso(array('Administrador'))):
+                        ?>
+                        link += `<a href="javascript:;" class="btn-tab-excluir" title="Gerar nova senha para o cliente" onclick="AbrirGerarNovaSenha(this)" data-nome="${row['nome']}" data-id="${row['idcliente']}"><i class="fa fa-key"></i></a>`;  
+                        <?php
+                            endif;
+                        ?>
                         return link;
                     }
                 }

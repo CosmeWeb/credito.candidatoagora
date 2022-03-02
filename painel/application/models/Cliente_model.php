@@ -30,8 +30,6 @@ if (!class_exists('Cliente_model'))
 		{
 			if($salvar)
 			{
-				if(empty($this->idcliente))
-					$this->senha = $this->Encrypt($this->senha);
 				if(empty($this->ip))
 					$this->ip = GetIP();
 				if(emptyData($this->cadastradoem))
@@ -82,12 +80,21 @@ if (!class_exists('Cliente_model'))
 			return $this->GeraOpcoesSql($value, $sql, "texto", "texto", $primeiro);
 		}
 		################################################################################################################
+		public function GerarOpcoesGestores($value = "0", $texto = "", $default = "0")
+		{
+			if(empty($texto))
+				$texto = __("-- Selecione --");
+			$primeiro = array("valor"=>$default,"texto"=>$texto);
+			$sql = "SELECT idcliente AS 'id', CONCAT(nome,' (',empresa,')') AS 'texto' FROM cliente WHERE idgestor = '0' ORDER BY texto ASC";
+			return $this->GeraOpcoesSql($value, $sql, "id", "texto", $primeiro);
+		}
+		################################################################################################################
 		public function GetSqlLista()
 		{
 			$retorno = "";
 			try
 			{
-				return "SELECT * FROM cliente ";
+				return "SELECT C.idcliente, C.idgestor, C.saldoconta, C.nome, C.email, C.empresa, C.acesso, C.status, C.cadastradoem, G.nome AS 'gestor', G.email AS 'emailgestor' FROM cliente C LEFT JOIN cliente G ON(C.idgestor = G.idcliente)";
 			}
 			catch( Exception $e )
 			{
@@ -101,7 +108,7 @@ if (!class_exists('Cliente_model'))
 			$retorno = "";
 			try
 			{
-				return "SELECT COUNT(*) AS CONT FROM cliente ";
+				return "SELECT COUNT(DISTINCT C.idcliente) AS CONT FROM cliente C LEFT JOIN cliente G ON(C.idgestor = G.idcliente)";
 			}
 			catch( Exception $e )
 			{
@@ -116,29 +123,29 @@ if (!class_exists('Cliente_model'))
 			$buscar = GetFiltro("buscar");
 			if(!empty($buscar))
 			{
-				$filtro .= " AND (nome LIKE '%{$buscar}%' OR email LIKE '%{$buscar}%' OR empresa LIKE '%{$buscar}%')";
+				$filtro .= " AND (C.nome LIKE '%{$buscar}%' OR C.email LIKE '%{$buscar}%' OR C.empresa LIKE '%{$buscar}%')";
 			}
 			$status = GetFiltro("status");
 			if(!empty($status))
 			{
-				$filtro .= " AND status = '{$status}'";
+				$filtro .= " AND C.status = '{$status}'";
 			}
 			$acesso = GetFiltro("acesso");
 			if(!empty($acesso))
 			{
-				$filtro .= " AND acesso = '{$acesso}'";
+				$filtro .= " AND C.acesso = '{$acesso}'";
 			}
 			$cadastradoeminicio = GetFiltro("cadastradoeminicio");
 			if(!empty($cadastradoeminicio))
 			{
 				$data = date("Y-m-d", TimeData($cadastradoeminicio));
-				$filtro .= " AND cadastradoem >= '{$data}'";
+				$filtro .= " AND C.cadastradoem >= '{$data}'";
 			}
 			$cadastradoemfim = GetFiltro("cadastradoemfim");
 			if(!empty($cadastradoemfim))
 			{
 				$data = date("Y-m-d", TimeData($cadastradoemfim));
-				$filtro .= " AND cadastradoem <= '{$data}'";
+				$filtro .= " AND C.cadastradoem <= '{$data}'";
 			}
 			if(!empty($filtro))
 			{
@@ -148,7 +155,7 @@ if (!class_exists('Cliente_model'))
 			{
 				return $filtro;
 			}
-			$ordem = array('idcliente', 'nome', 'email', 'acesso', 'status', 'cadastradoem', 'idcliente');
+			$ordem = array('C.idcliente', 'C.nome', 'C.email', 'C.saldoconta', 'gestor', 'C.acesso', 'C.status', 'C.cadastradoem', 'C.idcliente');
 			$start = Get("start", 0);
 			$length = Get("length", 10);
 			$order = Get("order", 0,0);
@@ -257,22 +264,6 @@ if (!class_exists('Cliente_model'))
 			}
 		}
 		################################################################################################################
-		public function Encrypt($codigo = "")
-		{
-			$retorno = sha1(md5(gerarSenha(8)));
-			try
-			{
-				if(empty($codigo))
-					return $retorno;
-				return sha1(md5($codigo));
-			}
-			catch( Exception $e )
-			{
-				throw new Exception( $e );
-				return $retorno;
-			}
-		}
-		################################################################################################################
 		public function GetNomesCampos()
 		{
 			$campos = array(
@@ -308,6 +299,17 @@ if (!class_exists('Cliente_model'))
 					$dados['cadastradoem'] = date("d/m/Y H:i:s", TimeData($dados['cadastradoem']));
 				else
 					$dados['cadastradoem'] = "";
+				if(!empty($dados["gestor"]))
+				{
+					if(!empty($dados["emailgestor"]))
+					{
+						$dados["gestor"] .= " ({$dados["emailgestor"]})";
+					}
+				}
+				else
+				{
+					$dados["gestor"] = "";
+				}
 				return $dados;
 			}
 			catch( Exception $e )
@@ -344,8 +346,7 @@ if (!class_exists('Cliente_model'))
 				{
 					return $retorno;
 				}
-				$senha = $this->Encrypt($senha);
-				$filtro = "email = '{$email}' AND senha = '{$senha}' AND status = 'Ativo'";
+				$filtro = "email = '{$this->email}' AND senha = sha1(CONCAT(salt, '{$this->senha}')) AND status = 'Ativo'";
 				return $this->FiltroObjeto($filtro);
 			}
 			catch( Exception $e )
@@ -442,8 +443,8 @@ if (!class_exists('Cliente_model'))
 				}
 				else
 				{
-					$senha = $obj->Encrypt($senha);
-					$data = ["senha"=>$senha];
+					$obj->GerarSenha($senha);
+					$data = ["senha"=>$obj->senha, "salt"=>$obj->salt];
 					$retorno = $obj->Atualizar($id, $data);
 					if(empty($retorno))
 					{
@@ -503,6 +504,21 @@ if (!class_exists('Cliente_model'))
 				return 0;
 			}
 			return $id;
+		}
+		################################################################################################################
+		public function GerarSenha($senha = "12345678")
+		{
+			try
+			{
+				$salt = gerarSalt(32);
+				$this->senha = sha1($salt.$senha);
+				$this->salt = $salt;
+			}
+			catch( Exception $e )
+			{
+				throw new Exception( $e );
+				return;
+			}
 		}
 		################################################################################################################
 		public function __destruct()

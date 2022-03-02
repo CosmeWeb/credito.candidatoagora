@@ -28,7 +28,7 @@ class Cliente extends CI_Controller {
 	{
 		$cliente = GetModelo('cliente');
 		$linkRetorno = GetReferencia('cliente/listar');
-		if( !empty($id))
+		if(!empty($id))
 		{
 			$cliente->idcliente = $id;
 			if(!$cliente->Load())
@@ -39,28 +39,46 @@ class Cliente extends CI_Controller {
 			}
 			$this->gestao->SetBreadcrumbs("Editar",site_url('cliente/listar'), 'Cliente');
 			$data['obj'] = $cliente;
+			$senha = $cliente->senha;
+			$salt = $cliente->salt;
 		}
 		else
 		{
 			$this->gestao->SetBreadcrumbs("Novo cadastro",site_url('cliente/listar'), 'Cliente');
-			$data['obj'] = $cliente;
+			$data['obj'] = $cliente;			
+			$senha = "";
+			$salt = "";
 		}
 		$this->load->library('form_validation');
 		
 		$this->form_validation->set_rules( 'nome', __("nome"), 'required' );
 		$this->form_validation->set_rules( 'email', __("email"), 'required|valid_email|callback__checkEmail' );
-		$this->form_validation->set_rules( 'senha', __("senha"), 'required|min_length[8]' );
-		$this->form_validation->set_rules( 'confirma', __("Confirmar Senha"), 'required|min_length[8]|matches[senha]' );
+		if(!empty($id))
+		{
+			$this->form_validation->set_rules( 'senha', __("senha"), 'required|min_length[8]' );
+			$this->form_validation->set_rules( 'confirma', __("Confirmar Senha"), 'required|min_length[8]|matches[senha]' );
+		}
 		$this->form_validation->set_rules( 'status', __("status"), 'required' );
 
 		if( $this->form_validation->run() === FALSE )
 		{
+			$this->gestao->AddDashboard(__("Clientes"));
+			$this->gestao->SetHardUpload();
 			$this->gestao->GetView('cliente/editar', $data);
 		}
 		else
 		{
 			$post = $this->gestao->Request($cliente->GetDefault());
 			$cliente->Carregar($post);
+			if((!empty($post['senha']))||(empty($senha)))
+			{
+				$cliente->GerarSenha($post['senha']);
+			}
+			else
+			{
+				$cliente->salt = $salt;
+				$cliente->senha = $senha;
+			}
 			$cliente->Ajustar(true);
 			if(!$cliente->Salvar())
 			{
@@ -99,6 +117,59 @@ class Cliente extends CI_Controller {
 			$dados['erro'] = __("Erro ao carregar a classe do cliente.");
 		}
 		RetornaJSON($dados);
+	}
+	#######################################################################################################
+	public function salvarnovasenha()
+	{
+		$idcliente = Get("idcliente", 0);
+		$senha = Get("senha", "");
+		$obj = GetModelo("cliente");
+		if(empty($senha))
+		{			
+			$data['sucesso'] = false;
+			$data['erro'] = __("Você deve informar a nova senha.");
+			RetornaJSON($data);
+			return;
+		}
+		if(strlen($senha) < 8)
+		{			
+			$data['sucesso'] = false;
+			$data['erro'] = __("A senha deve conter mais de 8 Caracteres.");
+			RetornaJSON($data);
+			return;
+		}
+		if(empty($idcliente))
+		{
+			$data['sucesso'] = false;
+			$data['erro'] = __("O cliente não foi possível ser localizado.");
+			RetornaJSON($data);
+			return;
+		}
+		
+		$obj->idcliente = $idcliente;
+		if(!$obj->Load())
+		{
+			$data['sucesso'] = false;
+			$data['erro'] = __("O cliente não foi localizado.");
+			RetornaJSON($data);
+			return;
+		}
+		$obj->GerarSenha($senha);
+		$dados = ["senha"=>$obj->senha, "salt"=>$obj->salt];
+		$sucesso = $obj->Atualizar($obj->GetID(), $dados);
+		if($sucesso)
+		{
+			$data['sucesso'] = true;
+			$data['mensagem'] = __("Senha do cliente foi alterada com sucesso.");
+			$data['titulo'] = __("Sucesso");
+		}
+		else
+		{
+			$data['sucesso'] = true;
+			$data['erro'] = __("Não foi possível alterar a senha do cliente.");
+		}
+		RetornaJSON($data);
+		return;
 	}
 	#######################################################################################################
 	public function excluir($id = 0)
